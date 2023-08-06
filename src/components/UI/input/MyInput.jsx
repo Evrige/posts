@@ -1,8 +1,8 @@
 import React from 'react';
-
+import classes from "../input/MyInput.module.scss"
 const MyInput = (props) => {
     return (
-        <input {...props}/>
+        <input className={classes.myInput} {...props}/>
     );
 };
 
