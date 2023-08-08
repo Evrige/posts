@@ -5,6 +5,9 @@ import PostForm from "./components/PostForm";
 import MySelect from "./components/UI/select/MySelect";
 import MyInput from "./components/UI/input/MyInput";
 import PostFilter from "./components/PostFilter";
+import MyModal from "./components/UI/modal/MyModal";
+import MyButton from "./components/UI/button/MyButton";
+import {usePosts} from "./hooks/UsePosts";
 function App() {
     const [posts, setPosts] = useState([
         {id: 1, title: "JavaScript", description: "JavaScript - язык программирования"},
@@ -12,20 +15,12 @@ function App() {
         {id: 3, title: "Python", description: "Python - язык программирования"}
     ])
     const [filter, setFilter] = useState({sort: '', query: ''})
-
-    const sortedPosts =  useMemo(() => {
-        if(filter.sort){
-            return [...posts].sort((a, b) => a[filter.sort].localeCompare(b[filter.sort]))
-        }
-        return posts;
-        }, [filter.sort, posts])
-
-    const sortedAndSearchedPosts = useMemo(() => {
-        return sortedPosts.filter(post => post.title.toLowerCase().includes(filter.query.toLowerCase()))
-    }, [filter.query, sortedPosts])
+    const [modal, setModal] = useState(false);
+    const sortedAndSearchedPosts = usePosts(posts, filter.sort, filter.query)
 
     const createPost = (newPost) => {
         setPosts([...posts, newPost])
+        setModal(false)
     }
     
     const removePost = (post) => {
@@ -34,8 +29,10 @@ function App() {
     
     return (
         <div className="App">
-            <PostForm create={createPost}/>
-            <hr style={{margin: "15px 0"}}/>
+            <MyButton style={{marginTop: 30}} onClick={() => setModal(true)}>Создать пост</MyButton>
+            <MyModal visible={modal} setVisible={setModal}>
+                <PostForm create={createPost}/>
+            </MyModal>
             <PostFilter filter={filter} setFilter={setFilter}/>
             <PostList  remove={removePost} posts={sortedAndSearchedPosts} title={"Языки программирования"}/>
         </div>
